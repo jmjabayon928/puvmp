@@ -98,7 +98,7 @@ This repo focuses on **architecture and schema**.
 
 ## 🏅 Recognitions
 
-**From my former supervisor (PUVMP Team Lead):**
+**From Mr. Manny Camagay, Project Manager - PUVMP - DOTr:**
 
 > “Mr. Abayon is a very trustworthy and efficient team player.  
 > He developed the systems design for data governance and data sharing not only for the PUVMP but the whole sector in public transport. The system resolved many long-standing issues and bottlenecks in mobility, cooperative operations, and simplified digital finance processes nationwide. His departure was a huge loss and his role remains irreplaceable.”  
