@@ -1,0 +1,32 @@
+# Ignore environment files
+.env
+config.ini
+config.php
+
+# Ignore vendor libraries
+vendors/
+tcpdf/
+vendor/
+node_modules/
+
+# Ignore logs and temporary files
+*.log
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor folders
+.idea/
+.vscode/
+
+# Ignore uploads (sensitive)
+employees/
+efiles/
+efiles_cgs/
+efiles_comm/
+uploads/

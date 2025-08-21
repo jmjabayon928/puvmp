@@ -1,0 +1,186 @@
+<?php
+
+include("db.php");
+include("sqli.php");
+include("html.php");
+define('PAGE', 'd_mo_employee.php'); 
+
+$me_id = $_GET['me_id'];
+
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+	if (validate_level(PAGE) == true) {
+
+		if(isset($_POST['submitted'])) { // if submit button has been pressed
+			$me_id = filter_var($_POST['me_id'], FILTER_SANITIZE_NUMBER_INT);
+			
+			$sql = "DELETE FROM internals_memo_orders_employees
+					WHERE me_id = '$me_id'
+					LIMIT 1";
+			if (query($sql)) {
+				// log the activity
+				log_user(3, 'internals_memo_orders_employees', $me_id);
+				
+				// redirect
+				header("Location: internals.php?tab=3");
+				exit();
+			} else {
+				?>
+				<div class="alert alert-danger alert-dismissible fade in" role="alert">
+					<strong>Could not remove employee from travel order because: </strong><br />
+					<b><?php echo mysqli_error($connection) ?></b><br />
+					The query was <?php echo $sql ?>.<br />
+				</div>
+				<?PHP
+			}
+		} else {
+			?>
+			<!DOCTYPE html>
+			<html lang="en">
+			  <head>
+				<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+				<!-- Meta, title, CSS, favicons, etc. -->
+				<meta charset="utf-8">
+				<meta http-equiv="X-UA-Compatible" content="IE=edge">
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				  
+				<title>OTC | Remove Employee From Memorandum Order</title>
+
+				<!-- Bootstrap -->
+				<link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+				<!-- Font Awesome -->
+				<link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+				<!-- Custom Theme Style -->
+				<link href="build/css/custom.min.css" rel="stylesheet">
+			  </head>
+
+			  <body class="nav-md">
+				<div class="container body">
+				  <div class="main_container">
+					<div class="col-md-3 left_col">
+					  <div class="left_col scroll-view">
+						<div class="navbar nav_title" style="border: 0;">
+						  <?PHP site_title(); ?>
+						</div>
+
+						<div class="clearfix"></div>
+
+						<?php
+						profile_quick_info();
+						?>
+						
+						<br />
+
+						<?php
+						sidebar_menu();
+						?>
+					  </div>
+					</div>
+
+					<?php
+					top_navigation();
+					
+					$sql = "SELECT m.onum, DATE_FORMAT(m.odate, '%m/%d/%y'), m.subject, CONCAT(e.lname,', ',e.fname)
+							FROM internals_memo_orders_employees me
+								INNER JOIN internals_memo_orders m ON me.oid = m.oid
+								INNER JOIN employees e ON me.eid = e.eid
+							WHERE me.me_id = '$me_id'";
+					$res = query($sql); 
+					$row = fetch_array($res); 
+					
+					?>
+
+					<!-- page content -->
+					<div class="right_col" role="main">
+					  <div class="">
+						<div class="page-title">
+						  <div class="title_left">
+							<h3>Remove Employee From Travel Order</h3>
+						  </div>
+
+						  <div class="title_right">
+							<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+							  <div class="input-group">
+								<input type="text" class="form-control" placeholder="Search for...">
+								<span class="input-group-btn">
+								  <button class="btn btn-default" type="button">Go!</button>
+								</span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+						<div class="clearfix"></div>
+						<div class="row">
+						  <div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+							  <div class="x_content">
+								<br />
+								
+									<form action="d_mo_employee.php" method="POST" id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+									  <div class="form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12">Control No. </label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+										  <input type="text" readonly class="form-control col-md-7 col-xs-12" value="<?php echo $row[0] ?>">
+										</div>
+									  </div>
+									  <div class="form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12">Date of Travel </label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+										  <input type="text" readonly class="form-control col-md-7 col-xs-12" value="<?php echo $row[1] ?>">
+										</div>
+									  </div>
+									  <div class="form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12">Subject </label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+										  <input type="text" readonly class="form-control col-md-7 col-xs-12" value="<?php echo $row[2] ?>">
+										</div>
+									  </div>
+									  <div class="form-group">
+										<label class="control-label col-md-3 col-sm-3 col-xs-12">Employee </label>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+										  <input type="text" readonly class="form-control col-md-7 col-xs-12" value="<?php echo $row[3] ?>">
+										</div>
+									  </div>
+									  <div class="ln_solid"></div>
+									  <div class="form-group">
+										<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+										  <input type="hidden" name="submitted" value="1">
+										  <input type="hidden" name="me_id" value="<?php echo $me_id ?>">
+										  <button type="submit" class="btn btn-success">Remove Employee</button>
+										</div>
+									  </div>
+
+									</form>
+							  </div>
+							</div>
+						  </div>
+						</div>
+
+					  </div>
+					</div>
+					<!-- /page content -->
+
+					<?php
+					footer();
+					?>
+				  </div>
+				</div>
+
+				<!-- jQuery -->
+				<script src="vendors/jquery/dist/jquery.min.js"></script>
+				<!-- Bootstrap -->
+				<script src="vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+				<!-- Custom Theme Scripts -->
+				<script src="build/js/custom.min.js"></script>
+				
+			  </body>
+			</html>
+			<?PHP
+		}
+	}
+} else {
+	header('Location: login.php');	
+}
+
